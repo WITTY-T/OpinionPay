@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OpinionPay</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .auth-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2563eb;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-button:hover {
+            background: #1d4ed8;
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .auth-link a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        .demo-login {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e5e5;
+            text-align: center;
+        }
+        
+        .demo-button {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">OpinionPay</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="surveys.html">Surveys</a>
+                <a href="dashboard.html">Dashboard</a>
+                <button class="login-btn" style="display: none;">Login</button>
+                <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">Login to Your Account</h2>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-input" required>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">Login</button>
+                </form>
+                
+                <div class="auth-link">
+                    Don't have an account? <a href="signup.html">Sign up here</a>
+                </div>
+                
+                <div class="demo-login">
+                    <p style="margin-bottom: 1rem; color: #6b7280;">Just want to test the site?</p>
+                    <button class="demo-button" onclick="demoLogin()">Try Demo Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 OpinionPay. All rights reserved.</p>
+    </footer>
+
+    <script>
+       document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const loginData = {
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  };
+
+  try {
+    const response = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Store user data
+      localStorage.setItem('userId', result.user.id);
+      localStorage.setItem('userEmail', result.user.email);
+      localStorage.setItem('userName', result.user.fullName);
+      localStorage.setItem('userBalance', result.user.balance);
+      localStorage.setItem('totalEarned', result.user.totalEarned);
+      localStorage.setItem('surveysCompleted', result.user.surveysCompleted);
+      localStorage.setItem('userLoggedIn', 'true');
+      
+      alert('Login successful!');
+      window.location.href = 'dashboard.html';
+    } else {
+      alert('Error: ' + result.error);
+    }
+    
+  } catch (error) {
+    alert('Network error. Make sure backend is running.');
+  }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - OpinionPay</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .auth-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2563eb;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-button:hover {
+            background: #1d4ed8;
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .auth-link a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        .benefits {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">OpinionPay</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="surveys.html">Surveys</a>
+                <a href="dashboard.html">Dashboard</a>
+                <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+                <button class="signup-btn" style="display: none;">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">Create Your Account</h2>
+                
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name</label>
+                        <input type="text" id="fullName" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-input" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="country">Country</label>
+                        <select id="country" class="form-input" required>
+                            <option value="">Select your country</option>
+                            <option value="US">United States</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="CA">Canada</option>
+                            <option value="AU">Australia</option>
+                            <option value="DE">Germany</option>
+                            <option value="FR">France</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="age">Age</label>
+                        <input type="number" id="age" class="form-input" required min="18" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" required>
+                            I agree to the <a href="#" style="color: #2563eb;">Terms of Service</a> and <a href="#" style="color: #2563eb;">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">Create Account</button>
+                </form>
+                
+                <div class="auth-link">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+                
+                <div class="benefits">
+                    <h4 style="margin-bottom: 1rem;">Start earning immediately:</h4>
+                    <div class="benefit-item">✓ No minimum payout threshold</div>
+                    <div class="benefit-item">✓ Instant PayPal payments</div>
+                    <div class="benefit-item">✓ High-paying surveys</div>
+                    <div class="benefit-item">✓ Quick 5-15 minute surveys</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 OpinionPay. All rights reserved.</p>
+    </footer>
+
+    <script>
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const userData = {
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value,
+    fullName: document.getElementById('fullName').value,
+    country: document.getElementById('country').value,
+    age: document.getElementById('age').value
+  };
+
+  try {
+    const response = await fetch('http://localhost:3000/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Store user data in localStorage
+      localStorage.setItem('userId', result.user.id);
+      localStorage.setItem('userEmail', result.user.email);
+      localStorage.setItem('userName', result.user.fullName);
+      localStorage.setItem('userBalance', result.user.balance);
+      localStorage.setItem('userLoggedIn', 'true');
+      
+      alert('Account created successfully! Welcome to OpinionPay.');
+      window.location.href = 'surveys.html';
+    } else {
+      alert('Error: ' + result.error);
+    }
+    
+  } catch (error) {
+    alert('Network error. Make sure backend is running on localhost:3000');
+  }
+});
+    </script>
+</body>
+</html>

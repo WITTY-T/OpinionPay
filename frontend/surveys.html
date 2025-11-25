@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Surveys - OpinionPay</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .surveys-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .survey-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .survey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .survey-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .survey-reward {
+            background: #10b981;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .survey-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .take-survey-btn {
+            background: #2563eb;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .survey-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tag {
+            background: #f3f4f6;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+   <header>
+    <nav>
+        <div class="logo">OpinionPay</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="surveys.html">Surveys</a>
+            <a href="dashboard.html">Dashboard</a>
+            <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+            <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+        </div>
+    </nav>
+</header>
+
+    <main>
+        <div id="bitlabs-surveys">
+    <h2>Available Surveys</h2>
+    <div id="surveys-list"></div>
+</div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 OpinionPay. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="https://cdn.bitlabs.ai/sdk/web-sdk-v1.js"></script>
+    <script>
+       const bitlabs = new BitLabs('YOUR_PUBLISHER_TOKEN');
+
+// Load surveys when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadBitLabsSurveys();
+});
+
+async function loadBitLabsSurveys() {
+    try {
+        const surveys = await bitlabs.getSurveys();
+        displayBitLabsSurveys(surveys);
+    } catch (error) {
+        console.error('Error loading surveys:', error);
+        showFallbackSurveys();
+    }
+}
+
+function displayBitLabsSurveys(surveys) {
+    const container = document.getElementById('surveys-list');
+    
+    if (!surveys || surveys.length === 0) {
+        container.innerHTML = '<p>No surveys available at the moment. Check back later!</p>';
+        return;
+    }
+
+    let html = '';
+    surveys.forEach(survey => {
+        html += `
+            <div class="survey-card">
+                <div class="survey-header">
+                    <div class="survey-title">${survey.name || 'Market Research Survey'}</div>
+                    <div class="survey-reward">$${(survey.reward / 100).toFixed(2)}</div>
+                </div>
+                <div class="survey-details">
+                    <div class="detail-item">⏱️ ${survey.estimated_completion_time} min</div>
+                    <div class="detail-item">🏷️ ${survey.type || 'Survey'}</div>
+                    <div class="detail-item">🌍 ${survey.country_code || 'Global'}</div>
+                </div>
+                <p>${survey.description || 'Share your opinion and earn money'}</p>
+                <button class="take-survey-btn" onclick="startBitLabsSurvey('${survey.click_url}')">
+                    Take Survey
+                </button>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function startBitLabsSurvey(clickUrl) {
+    if (!localStorage.getItem('userLoggedIn')) {
+        alert('Please sign up or login first to take surveys!');
+        return;
+    }
+    
+    // Open survey in new tab
+    window.open(clickUrl, '_blank');
+    
+    // Track survey start (you'll need backend for proper tracking)
+    trackSurveyStart();
+}
+
+function trackSurveyStart() {
+    // Simple tracking - in production, use backend
+    const surveyStarts = parseInt(localStorage.getItem('surveyStarts') || '0');
+    localStorage.setItem('surveyStarts', surveyStarts + 1);
+}
+
+function showFallbackSurveys() {
+    // Show your demo surveys if BitLabs fails
+    const container = document.getElementById('surveys-list');
+    container.innerHTML = `
+        <div class="survey-card">
+            <div class="survey-header">
+                <div class="survey-title">Consumer Research Study</div>
+                <div class="survey-reward">$2.50</div>
+            </div>
+            <div class="survey-details">
+                <div class="detail-item">⏱️ 10-12 minutes</div>
+                <div class="detail-item">👥 200 spots available</div>
+            </div>
+            <p>Share your opinions on consumer products and shopping habits.</p>
+            <button class="take-survey-btn" onclick="showBitLabsMessage()">
+                Take Survey
+            </button>
+        </div>
+    `;}
+    </script>
+</body>
+</html>
