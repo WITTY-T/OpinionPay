@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - OpinionPay</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="./js/config.js"></script>
     <style>
         .auth-container {
             max-width: 400px;
@@ -174,47 +175,60 @@
         <p>&copy; 2024 OpinionPay. All rights reserved.</p>
     </footer>
 
-    <script>
-document.getElementById('signupForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const userData = {
-    email: document.getElementById('email').value,
-    password: document.getElementById('password').value,
-    fullName: document.getElementById('fullName').value,
-    country: document.getElementById('country').value,
-    age: document.getElementById('age').value
-  };
+   <script>
+    console.log('📝 Initializing signup form...');
+    console.log('Config available:', window.APP_CONFIG);
+    
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Check if config is available
+        if (!window.APP_CONFIG || !window.APP_CONFIG.API_BASE_URL) {
+            alert('❌ Configuration error. Please refresh the page.');
+            return;
+        }
 
-  try {
-    const response = await fetch('http://localhost:3000/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData)
+        console.log('🔄 Form submitted to:', window.APP_CONFIG.API_BASE_URL);
+
+        const formData = {
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            fullName: document.getElementById('fullName').value,
+            country: document.getElementById('country').value,
+            age: document.getElementById('age').value
+        };
+
+        try {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            console.log('Response:', result);
+
+            if (result.success) {
+                // Store user data
+                localStorage.setItem('userId', result.user.id);
+                localStorage.setItem('userEmail', result.user.email);
+                localStorage.setItem('userName', result.user.fullName);
+                localStorage.setItem('userBalance', result.user.balance);
+                localStorage.setItem('userLoggedIn', 'true');
+                
+                alert('✅ Account created successfully!');
+                window.location.href = 'surveys.html';
+            } else {
+                alert('❌ Error: ' + result.error);
+            }
+
+        } catch (error) {
+            console.error('💥 Network error:', error);
+            alert('🚫 Cannot connect to server. Please try again later.');
+        }
     });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      // Store user data in localStorage
-      localStorage.setItem('userId', result.user.id);
-      localStorage.setItem('userEmail', result.user.email);
-      localStorage.setItem('userName', result.user.fullName);
-      localStorage.setItem('userBalance', result.user.balance);
-      localStorage.setItem('userLoggedIn', 'true');
-      
-      alert('Account created successfully! Welcome to OpinionPay.');
-      window.location.href = 'surveys.html';
-    } else {
-      alert('Error: ' + result.error);
-    }
-    
-  } catch (error) {
-    alert('Network error. Make sure backend is running on localhost:3000');
-  }
-});
     </script>
 </body>
 </html>
